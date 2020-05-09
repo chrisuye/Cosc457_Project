@@ -30,12 +30,25 @@ public class Students {
         return this.firstName;
     }
     
+    public String getID(){
+        
+        return this.ID;
+    }
+    
     public Boolean checkID(String ID){
         boolean check = false;
         if(this.ID.equals(ID)){
             check = true;
         }
         return check;
+    }
+    
+    public Boolean checkFname(String firstName){
+        return this.firstName.equals(firstName);
+    }
+    
+    public Boolean checkLname(String lastName){
+        return this.lastName.equals(lastName);
     }
     
 }

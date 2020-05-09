@@ -5,6 +5,11 @@
  */
 package Database;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  *
  * @author chris
@@ -38,5 +43,22 @@ public class TimeTable {
     }
     public String getTime(){
         return this.time;
+    }
+    
+    public String getHours(TimeTable timeTable) throws ParseException{
+        
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+
+        Date date1 = format.parse(this.time);
+
+        Date date2 = format.parse(timeTable.getTime());
+
+        long millis = date2.getTime() - date1.getTime(); 
+        int hours = (int) (millis/(1000 * 60 * 60));
+        int mins = (int) ((millis/(1000*60)) % 60);
+
+        String diff = hours + ":" + mins; 
+        
+        return diff;
     }
 }

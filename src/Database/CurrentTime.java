@@ -12,23 +12,26 @@ import java.time.format.DateTimeFormatter;
  *
  * @author chris
  */
-public class CurrentTime {
-    
-    private LocalDateTime date = LocalDateTime.now();
-       
-    private DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("MM-dd-yyyy");
-    private DateTimeFormatter formatTime = DateTimeFormatter.ofPattern("HH:mm:ss");
-    
-    private String formattedDate = date.format(formatDate);
-    private String formattedTime = date.format(formatTime);
-    
+public class CurrentTime { 
     public CurrentTime(){}
     
     public String getTime(){
+        LocalDateTime date = LocalDateTime.now();
+        DateTimeFormatter formatTime = DateTimeFormatter.ofPattern("HH:mm:ss");
+    
+     
+        String formattedTime = date.format(formatTime);
+        
         return formattedTime;
     }
     
     public String getDate(){
+        LocalDateTime date = LocalDateTime.now();
+       
+        DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+        
+        String formattedDate = date.format(formatDate);
+        
         return formattedDate;
     }
     

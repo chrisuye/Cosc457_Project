@@ -8,9 +8,11 @@ package Database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -19,27 +21,64 @@ import javax.swing.table.DefaultTableModel;
  */
 public class Table extends javax.swing.JFrame {
     
-    private static ArrayList<TuoPresent> tuoPresent = new ArrayList<TuoPresent>();
-    private static ArrayList<TuePresent> tuePresent = new ArrayList<TuePresent>();
-    private static ArrayList<TuoPresent> tuoPresentTime = new ArrayList<TuoPresent>();
-    private static ArrayList<TuePresent> tuePresentTime = new ArrayList<TuePresent>();
-    private static ArrayList<TimeTable> tuoTimeS = new ArrayList<TimeTable>();
-    private static ArrayList<TimeTable> tuoTimeE = new ArrayList<TimeTable>();
-    private static ArrayList<TimeTable> tueTimeS = new ArrayList<TimeTable>();
-    private static ArrayList<TimeTable> tueTimeE = new ArrayList<TimeTable>();
+    private static final ArrayList<TuoPresent> tuoPresent = new ArrayList<TuoPresent>();
+    private static final ArrayList<TuePresent> tuePresent = new ArrayList<TuePresent>();
+    private static final ArrayList<TimeTable> tuoTimeS = new ArrayList<TimeTable>();
+    private static final ArrayList<TimeTable> tuoTimeE = new ArrayList<TimeTable>();
+    private static final ArrayList<TimeTable> tueTimeS = new ArrayList<TimeTable>();
+    private static final ArrayList<TimeTable> tueTimeE = new ArrayList<TimeTable>();
     
-    private static ArrayList<Students> students = new ArrayList<Students>();
-    private static ArrayList<Tutor> tutor = new ArrayList<Tutor>();
-    private static ArrayList<Tutee> tutee = new ArrayList<Tutee>();
+    private static final ArrayList<Students> students = new ArrayList<Students>();
+    private static final ArrayList<Tutor> tutor = new ArrayList<Tutor>();
+    private static final ArrayList<Tutee> tutee = new ArrayList<Tutee>();
     
-    private static ArrayList<Taking> taking = new ArrayList<Taking>();
-    private static ArrayList<Taking> math = new ArrayList<Taking>();
+    private static final ArrayList<Taking> taking = new ArrayList<Taking>();
+    private static final ArrayList<Taking> math = new ArrayList<Taking>();
 
     /**
      * Creates new form Test
      */
     public Table() {
         initComponents();
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                int reply = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Tutor Center", JOptionPane.YES_NO_OPTION);
+                if (reply == JOptionPane.YES_OPTION) {
+                    try {
+                    Class.forName("com.mysql.cj.jdbc.Driver");
+                } catch (ClassNotFoundException err) {
+                    JOptionPane.showMessageDialog(null,err);
+                }
+       
+                final String ID = "cseyou1";
+                final String PW = "Cosc*ymfw";
+                final String SERVER = "jdbc:mysql://triton.towson.edu:3360/?serverTimezone=EST#/cseyou1db";
+
+                try
+                {
+
+                    Connection con = DriverManager.getConnection(SERVER,ID,PW);
+                    Statement stmt = con.createStatement();
+
+                    stmt.executeUpdate("DELETE FROM cseyou1db.Tutor_signin");
+                    stmt.executeUpdate("DELETE FROM cseyou1db.Tutee_signin");
+
+
+
+                }
+                catch(SQLException error)
+                {
+                    JOptionPane.showMessageDialog(null,error);
+                }
+                System.exit(0);
+                    }else {
+                        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+                    }
+                 
+                        
+                    }
+                });
     }
 
     /**
@@ -347,16 +386,16 @@ public class Table extends javax.swing.JFrame {
                 tuePresent.add(new TuePresent(fName,lName));
             }
             
-            for(TuoPresent i: tuoPresent){
+            tuoPresent.forEach((i) -> {
                 model.addRow(new Object[] {i.getFirst(),i.getLast(),"Tutor"});
-            }
-            for(TuePresent i: tuePresent){
+            });
+            tuePresent.forEach((i) -> {
                 model.addRow(new Object[] {i.getFirst(),i.getLast(),"Tutee"});
-            }
+            });
             
             
         }
-        catch(Exception e)
+        catch(SQLException e)
         {
             JOptionPane.showMessageDialog(null,e);
         }
@@ -407,7 +446,7 @@ public class Table extends javax.swing.JFrame {
             rs = stmt.executeQuery("SELECT * FROM cseyou1db.TutorEtime");
             while(rs.next()){
                 String fName = rs.getString("TEFName");
-                String lName = rs.getString("TESName");
+                String lName = rs.getString("TELName");
                 String date = rs.getString("TEDate");
                 String time = rs.getString("TETime");
                 
@@ -455,7 +494,7 @@ public class Table extends javax.swing.JFrame {
             
             
         }
-        catch(Exception e)
+        catch(SQLException e)
         {
             JOptionPane.showMessageDialog(null,e);
         }
@@ -468,9 +507,9 @@ public class Table extends javax.swing.JFrame {
                 model.removeRow(i);
             }
         }
-        for(TuoPresent i: tuoPresent){
-             model.addRow(new Object[] {i.getFirst(),i.getLast(),"Tutor"});
-        }
+        tuoPresent.forEach((i) -> {
+            model.addRow(new Object[] {i.getFirst(),i.getLast(),"Tutor"});
+        });
     }//GEN-LAST:event_tutorBtnActionPerformed
 
     private void tuteeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tuteeBtnActionPerformed
@@ -480,9 +519,9 @@ public class Table extends javax.swing.JFrame {
                 model.removeRow(i);
             }
         }
-        for(TuePresent i: tuePresent){
+        tuePresent.forEach((i) -> {
             model.addRow(new Object[] {i.getFirst(),i.getLast(),"Tutee"});
-        }
+        });
     }//GEN-LAST:event_tuteeBtnActionPerformed
 
     private void searchInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchInputActionPerformed
@@ -658,29 +697,21 @@ public class Table extends javax.swing.JFrame {
             
             for(Tutor i: tutor){
                 if(i.checkID(search) || check){
-                    for(Students j: students){
-                        if(j.checkID(search)|| j.checkID(i.getID())){
-                            for(Taking k: math){
-                                if(k.checkId(search) || k.checkId(i.getID())){
-                                    model.addRow(new Object[]{i.getID(),j.getFirst(),j.getLast(),k.getCnum(),"Tutor"});
-                                }
-                            }
-                        }
-                    }
+                    students.stream().filter((j) -> (j.checkID(search)|| j.checkID(i.getID()))).forEachOrdered((j) -> {
+                        math.stream().filter((k) -> (k.checkId(search) || k.checkId(i.getID()))).forEachOrdered((k) -> {
+                            model.addRow(new Object[]{i.getID(),j.getFirst(),j.getLast(),k.getCnum(),"Tutor"});
+                        });
+                    });
                 }
             }
             
             for(Tutee i: tutee){
                 if(i.checkID(search)|| check){
-                    for(Students j: students){
-                        if(j.checkID(search)|| j.checkID(i.getID())){
-                            for(Taking k: taking){
-                                if(k.checkId(search)|| k.checkId(i.getID())){
-                                    model.addRow(new Object[]{i.getID(),j.getFirst(),j.getLast(),k.getCnum(),"Tutee"});
-                                }
-                            }
-                        }
-                    }
+                    students.stream().filter((j) -> (j.checkID(search)|| j.checkID(i.getID()))).forEachOrdered((j) -> {
+                        taking.stream().filter((k) -> (k.checkId(search)|| k.checkId(i.getID()))).forEachOrdered((k) -> {
+                            model.addRow(new Object[]{i.getID(),j.getFirst(),j.getLast(),k.getCnum(),"Tutee"});
+                        });
+                    });
                 }
             }
             
@@ -688,7 +719,7 @@ public class Table extends javax.swing.JFrame {
             
             
         }
-        catch(Exception e)
+        catch(SQLException e)
         {
             JOptionPane.showMessageDialog(null,e);
         }
@@ -726,6 +757,7 @@ public class Table extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new Table().setVisible(true);
             }
